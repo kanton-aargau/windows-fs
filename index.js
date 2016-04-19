@@ -15,18 +15,20 @@ const wmicArgs = [
  *
  * @param {String} unc A UNC path like `//server`
  * @param {String} path A path like `some/path/to/folder`
- * @returns {Promise} Promise which resolves to the drive letter which the 
- * path was mounted on
+ * @returns {Promise} Resolves to the drive letter which the path was
+ * mounted on, rejects when the command fails
  * 
  * @example
  * // (given letter Y: is free)
  * mount('server', 'c$')
+ *   .then((letter) => console.log(letter))
+ *   .catch((err) => console.error('failed to mount', err))
  * // -> Y:
  */
 
 function mount (unc, path) {
   if (!unc && !path) {
-    throw new Error('Please specify `unc` and `path`')
+    throw new Error('No `unc` or `path` specified')
   }
 
   const proc = spawn(
@@ -37,6 +39,34 @@ function mount (unc, path) {
   return proc.then(
     (io) => parseDriveLetter(io.stdout)
   )
+}
+
+/**
+ * Unmounts a network drive given a `letter` and returns the `letter`.
+ * 
+ * @param {String} letter Network drive letter
+ * @returns {Promise} Resolves to the drive letter when successful, rejects
+ * when the command fails
+ *
+ * @example
+ * // (given letter Z: is mounted)
+ * unmount('Z:')
+ *   .then((letter) => console.log(letter))
+ *   .catch((err) => console.error('failed to unmount', err))
+ * // -> Z:
+ */
+
+function unmount (letter) {
+  if (!letter) {
+    throw new Error('No Letter specified')
+  }
+
+  const proc = spawn(
+    'net',
+    ['use', letter, '/delete']
+  )
+
+  return proc.then(() => letter)
 }
 
 /**
@@ -167,4 +197,5 @@ exports.toWindowsPath = toWindowsPath
 exports.getDirSize = getDirSize
 exports.toUncPath = toUncPath
 exports.getStats = getStats
+exports.unmount = unmount
 exports.mount = mount

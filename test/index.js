@@ -1,12 +1,13 @@
 
+const join = require('path').join
 const windows = require('../')
 const test = require('tape')
-const join = require('join')
 
 test('get directory size', (t) => {
   windows.getDirSize(join(__dirname, 'fixtures'))
     .then((size) => {
-      t.equal(202, size)
+      console.log(size)
+      t.equal(204, size)
       t.end()
     })
     .catch((err) => {
@@ -40,5 +41,13 @@ test('stats', (t) => {
 test('mount', (t) => {
   // Not sure how to test because a network server is needed.
   t.pass()
+  t.end()
+})
+
+test('unmount', (t) => {
+  // Not sure how to test because a network server is needed.
+  windows.unmount('Z:')
+    .then((letter) => t.same(letter, 'Z:'))
+    .catch(() => t.pass())
   t.end()
 })

@@ -26,11 +26,9 @@ mount('server', 'folder')
 
 ## API
 
-Note that all paths are written in unix style format to ease the developer pain from double escaping the backslash in windows. All other path characteristics stay the same (`a:/`, `//server`).
-
 ### getDirSize
 
-Get the directory size (in bytes) using a recursive walk.
+Gets the directory size (in bytes) using a recursive walk.
 
 **Parameters**
 
@@ -72,17 +70,20 @@ tuple the drive letter which it was mounted on.
 
 -   `unc` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** A UNC path like `//server`
 -   `path` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** A path like `some/path/to/folder`
+-   `credentials` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)=** `user` and `password` to log into a network
 
 **Examples**
 
 ```javascript
 // (given letter Y: is free)
 mount('server', 'c$')
+  .then((letter) => console.log(letter))
+  .catch((err) => console.error('failed to mount', err))
 // -> Y:
 ```
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** Promise which resolves to the drive letter which the 
-path was mounted on
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** Resolves to the drive letter which the path was
+mounted on, rejects when the command fails
 
 ### toUncPath
 
@@ -90,13 +91,13 @@ Creates a windows path given a `server` name and a unix `path`.
 
 **Parameters**
 
--   `server`  
--   `path`  
+-   `server` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Server name
+-   `share` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Path
 
 **Examples**
 
 ```javascript
-windowsPath('server', 'some/path/to/a/log')
+toUncPath('server', 'some/path/to/a/log')
 // -> `\\server\some\path\to\a\log`
 ```
 
@@ -117,6 +118,27 @@ toWindowsPath('some/random/folder')
 ```
 
 Returns **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Windows style path
+
+### unmount
+
+Unmounts a network drive given a `letter` and returns the `letter`.
+
+**Parameters**
+
+-   `letter` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Network drive letter
+
+**Examples**
+
+```javascript
+// (given letter Z: is mounted)
+unmount('Z:')
+  .then((letter) => console.log(letter))
+  .catch((err) => console.error('failed to unmount', err))
+// -> Z:
+```
+
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** Resolves to the drive letter when successful, rejects
+when the command fails
 
 ## Tests
 

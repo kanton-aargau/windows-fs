@@ -47,7 +47,12 @@ test('mount', (t) => {
 test('unmount', (t) => {
   // Not sure how to test because a network server is needed.
   windows.unmount('Z:')
-    .then((letter) => t.same(letter, 'Z:'))
-    .catch(() => t.pass())
-  t.end()
+    .then((letter) => {
+      t.same(letter, 'Z:')
+      t.end()
+    })
+    .catch(() => {
+      t.pass()
+      t.end()
+    })
 })

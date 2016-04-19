@@ -121,7 +121,7 @@ function toWindowsPath (path) {
  * Creates a windows path given a `server` name and a unix `path`.
  *
  * @example
- * windowsPath('server', 'some/path/to/a/log')
+ * toUncPath('server', 'some/path/to/a/log')
  * // -> `\\server\some\path\to\a\log`
  */
 
@@ -145,8 +145,8 @@ function parseNumber (str) {
  * @private
  * 
  * @example
- *   parseDriveLetter('a String with the letter Y: in it')
- *   -> Y:
+ * parseDriveLetter('a String with the letter Y: in it')
+ * // -> Y:
  */
 
 function parseDriveLetter (str) {

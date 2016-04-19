@@ -8,6 +8,10 @@
     "test": "tape test/*.js | tap-spec",
     "generate-docs": "documentation readme index.js -s \"API\""
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kanton-aargau/windows-fs"
+  },
   "keywords": [
     "Windows",
     "cmd",

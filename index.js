@@ -1,7 +1,15 @@
 
 'use strict'
 
+const splitEvery = require('ramda/src/splitEvery')
+const findIndex = require('ramda/src/findIndex')
+const remove = require('ramda/src/remove')
+const reduce = require('ramda/src/reduce')
+const append = require('ramda/src/append')
+const split = require('ramda/src/split')
 const spawn = require('buffered-spawn')
+const pipe = require('ramda/src/pipe')
+const map = require('ramda/src/map')
 const walk = require('fswalk')
 
 const wmicArgs = [
@@ -11,7 +19,7 @@ const wmicArgs = [
 
 /**
  * Mounts a network drive to the next available drive Letter and returns a
- * tuple the drive letter which it was mounted on.
+ * the drive letter which it was mounted on.
  *
  * @param {String} unc - A UNC path like `//server`
  * @param {String} path - A path like `some/path/to/folder`
@@ -71,6 +79,65 @@ function unmount (letter) {
   )
 
   return proc.then(() => letter)
+}
+
+/**
+ * Gets a list of mounted drive letters and their respective unc paths.
+ * 
+ * @return {Array} - Array of { unc, letter } tuples
+ */
+function getMountedDriveLetters () {
+  return spawn('net', ['use'])
+    .then((io) => {
+      return pipe(
+        //split into lines
+        split('\n'),
+
+        // remove header
+        remove(0, 6),
+
+        // remove unnecesary information
+        reduce((acc, line) => {
+          if (line.indexOf('OK') == -1) return acc
+          return append(line, acc)
+        }, []),
+
+        // parse drive letter and unc path
+        map((line) => {
+          return {
+            letter: parseDriveLetter(line),
+            unc: parseUNC(line)
+          }
+        })
+      )(io.stdout)
+    })
+}
+
+/**
+ * Checks if a given `unc` path is already mounted. If it's mounted returns
+ * the drive letter otherwise returns undefined.
+ * 
+ * @param  {String}  unc - Unc like path `server/share$`
+ * @return {String|undefined} - The drive letter or if not found `undefined`
+ *
+ * @example
+ * isMounted('server/share$')
+ *   .then((letter) => {
+ *     // mounted network drive hasn't been found
+ *     if (!letter) return
+ *     // found
+ *   })
+ */
+
+function isMounted (unc) {
+  unc = toWindowsPath(toUnc(unc))
+  return getMountedDriveLetters()
+    .then((drives) => {
+      const i = findIndex((el) => el.unc == unc, drives)
+      return i
+        ? drives[i].letter
+        : undefined
+    })
 }
 
 /**
@@ -177,7 +244,7 @@ function parseNumber (str) {
 }
 
 /**
- * Parses a given `str` for drive letters like `Z:`
+ * Parses a given `str` for drive letters like `Z:`.
  *
  * @private
  *
@@ -191,6 +258,16 @@ function parseDriveLetter (str) {
 }
 
 /**
+ * Parses a given `str` for UNC paths like `\\server\share$\user`.
+ *
+ * @private
+ */
+
+function parseUNC (str) {
+  return /\\\\[^\s]+/.exec(str)[0]
+}
+
+/**
  * Converts a server name to an unc path.
  *
  * @private
@@ -200,9 +277,11 @@ function toUnc (server) {
   return `//${server}`
 }
 
+exports.getMountedDriveLetters = getMountedDriveLetters
 exports.toWindowsPath = toWindowsPath
 exports.getDirSize = getDirSize
 exports.toUncPath = toUncPath
+exports.isMounted = isMounted
 exports.getStats = getStats
 exports.unmount = unmount
 exports.mount = mount

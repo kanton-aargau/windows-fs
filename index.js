@@ -134,7 +134,7 @@ function isMounted (unc) {
   return getMountedDriveLetters()
     .then((drives) => {
       const i = findIndex((el) => el.unc == unc, drives)
-      return i
+      return i != -1
         ? drives[i].letter
         : undefined
     })

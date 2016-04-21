@@ -26,6 +26,8 @@ mount('server', 'folder')
 
 ## API
 
+Note that all paths are written in unix style format to ease the developer pain from double escaping the backslash in windows. All other path characteristics stay the same (`a:/`, `//server`).
+
 ### getDirSize
 
 Gets the directory size (in bytes) using a recursive walk.
@@ -42,6 +44,12 @@ getDirSize('c:/temp/log')
 ```
 
 Returns **[Number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)** Directory size in bytes
+
+### getMountedDriveLetters
+
+Gets a list of mounted drive letters and their respective unc paths.
+
+Returns **[Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)** Array of { unc, letter } tuples
 
 ### getStats
 
@@ -61,10 +69,32 @@ getStats('Z:')
 
 Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise which resolves to `{ freeSpace, size }`
 
+### isMounted
+
+Checks if a given `unc` path is already mounted. If it's mounted returns
+the drive letter otherwise returns undefined.
+
+**Parameters**
+
+-   `unc` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Unc like path `server/share$`
+
+**Examples**
+
+```javascript
+isMounted('server/share$')
+  .then((letter) => {
+    // mounted network drive hasn't been found
+    if (!letter) return
+    // found
+  })
+```
+
+Returns **([String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)\|[undefined](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined))** The drive letter or if not found `undefined`
+
 ### mount
 
 Mounts a network drive to the next available drive Letter and returns a
-tuple the drive letter which it was mounted on.
+the drive letter which it was mounted on.
 
 **Parameters**
 

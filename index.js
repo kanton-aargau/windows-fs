@@ -42,9 +42,13 @@ function mount (unc, path, credentials) {
 
   let args = ['use', '*', toUncPath(unc, path)]
 
-  if (credentials && !(credentials.user && credentials.password)) {
-    throw new Error('No `user` and `password` field specified')
-  } else {
+  if (credentials) {
+    if (!credentials.user || !credentials.password) {
+      throw new Error(
+        'Please specifiy both `user` and `password` keys for credentials'
+      )
+    }
+
     args.push(`/user:${credentials.user}`)
     args.push(credentials.password)
   }

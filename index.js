@@ -3,10 +3,10 @@
 
 const splitEvery = require('ramda/src/splitEvery')
 const findIndex = require('ramda/src/findIndex')
-const ps = require('windows-powershell')
 const remove = require('ramda/src/remove')
 const reduce = require('ramda/src/reduce')
 const append = require('ramda/src/append')
+const ps = require('windows-powershell')
 const split = require('ramda/src/split')
 const spawn = require('buffered-spawn')
 const pipe = require('ramda/src/pipe')

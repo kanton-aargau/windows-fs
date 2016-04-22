@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "lint": "standard",
+    "v": "xyz",
     "test": "tape test/*.js | tap-spec",
     "generate-docs": "documentation readme index.js -s \"API\""
   },

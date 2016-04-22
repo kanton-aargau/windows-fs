@@ -9,7 +9,6 @@ const append = require('ramda/src/append')
 const split = require('ramda/src/split')
 const spawn = require('buffered-spawn')
 const pipe = require('ramda/src/pipe')
-const map = require('ramda/src/map')
 const walk = require('fswalk')
 
 const wmicArgs = [
@@ -100,19 +99,21 @@ function getMountedDriveLetters () {
         // remove header
         remove(0, 6),
 
-        // remove unnecesary information
+        // parse command
         reduce((acc, line) => {
-          if (line.indexOf('OK') == -1) return acc
-          return append(line, acc)
-        }, []),
+          const status = parseStatus(line)
 
-        // parse drive letter and unc path
-        map((line) => {
-          return {
-            letter: parseDriveLetter(line),
-            unc: parseUNC(line)
-          }
-        })
+          // remove if no status
+          if (status == null) return acc
+
+          const letter = parseDriveLetter(line)
+
+          // remove `Microsoft Windows Network` lines
+          if (letter == null) return acc
+          
+          const unc = parseUNC(line)
+          return append({ letter, unc }, acc)
+        }, [])
       )(io.stdout)
     })
 }
@@ -248,7 +249,7 @@ function parseNumber (str) {
 }
 
 /**
- * Parses a given `str` for drive letters like `Z:`.
+ * Parses a given `str` for drive letters like `Z:`. Returns null if not found.
  *
  * @private
  *
@@ -258,7 +259,27 @@ function parseNumber (str) {
  */
 
 function parseDriveLetter (str) {
-  return /([A-Z]):/.exec(str)[0]
+  const re = /([A-Z]):/
+  if (re.test(str)) {
+    return re.exec(str)[0]
+  } else {
+    return null
+  }
+}
+
+/**
+ * Parses the status out of a `net use` command. Returns null if not found.
+ *
+ * @private
+ */
+
+function parseStatus (str) {
+  const re = /^\w+/
+  if (re.test(str)) {
+    return re.exec(str)[0]
+  } else {
+    return null
+  }
 }
 
 /**

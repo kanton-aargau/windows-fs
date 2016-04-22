@@ -3,6 +3,7 @@
 
 const splitEvery = require('ramda/src/splitEvery')
 const findIndex = require('ramda/src/findIndex')
+const ps = require('windows-powershell')
 const remove = require('ramda/src/remove')
 const reduce = require('ramda/src/reduce')
 const append = require('ramda/src/append')
@@ -15,6 +16,22 @@ const wmicArgs = [
   'freeSpace',
   'size'
 ]
+
+/**
+ * Gets various information about all the drives mounted on a given
+ * `computer`
+ *
+ * @param {String} computer - Computer name
+ * @return {Promise} - Resolves to `{ json, stdout, stderr }`
+ */
+function drivesInfo (computer) {
+  const cmd = ps.pipe(
+    `get-wmiobject Win32_LogicalDisk -computerName ${computer}`,
+    'where -property DriveType -eq 3'
+  )
+
+  return ps.shell(ps.toJson(cmd))
+}
 
 /**
  * Mounts a network drive to the next available drive Letter and returns a

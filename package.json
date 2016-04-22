@@ -34,6 +34,7 @@
   "dependencies": {
     "buffered-spawn": "^3.0.0",
     "fswalk": "^1.2.0",
-    "ramda": "^0.21.0"
+    "ramda": "^0.21.0",
+    "windows-powershell": "^0.1.0"
   }
 }

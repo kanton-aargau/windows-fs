@@ -28,6 +28,17 @@ mount('server', 'folder')
 
 Note that all paths are written in unix style format to ease the developer pain from double escaping the backslash in windows. All other path characteristics stay the same (`a:/`, `//server`).
 
+### drivesInfo
+
+Gets various information about all the drives mounted on a given
+`computer`
+
+**Parameters**
+
+-   `computer` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Computer name
+
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** Resolves to `{ json, stdout, stderr }`
+
 ### getDirSize
 
 Gets the directory size (in bytes) using a recursive walk.

@@ -322,6 +322,7 @@ function toUnc (server) {
 exports.getMountedDriveLetters = getMountedDriveLetters
 exports.toWindowsPath = toWindowsPath
 exports.getDirSize = getDirSize
+exports.drivesInfo = drivesInfo
 exports.toUncPath = toUncPath
 exports.isMounted = isMounted
 exports.getStats = getStats

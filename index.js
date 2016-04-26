@@ -159,7 +159,7 @@ function mountedDrives () {
 
 function isMounted (unc) {
   unc = toWindowsPath(toUnc(unc))
-  return mountedDevices()
+  return mountedDrives()
     .then((drives) => {
       const i = findIndex((el) => el.unc == unc, drives)
       return i != -1

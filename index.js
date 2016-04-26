@@ -206,11 +206,12 @@ function statByDriveLetter (letter) {
  * Gets the directory size (in bytes) using a recursive walk.
  *
  * @param {String} path - Absolute path
- * @returns {Number} - Directory size in bytes
+ * @returns {Object} - Object with `size` (directory size in bytes) and
+ * `count` (file count)
  *
  * @example
  * statDirectory('c:/temp/log')
- * // -> 32636
+ * // -> { count: 4, size: 32636 }
  */
 
 function statDirectory (path) {
@@ -218,16 +219,18 @@ function statDirectory (path) {
 
   return new Promise((resolve, reject) => {
     let count = 0
+    let size = 0
 
     walk(path, onFile, onFinish)
 
     function onFile (path, stats) {
-      count += stats.size
+      count += 1
+      size += stats.size
     }
 
     function onFinish (err) {
       if (err) return reject(err)
-      resolve(count)
+      resolve({ size, count })
     }
   })
 }

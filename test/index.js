@@ -5,8 +5,9 @@ const test = require('tape')
 
 test('stat directory size', (t) => {
   windows.statDirectory(join(__dirname, 'fixtures'))
-    .then((size) => {
-      t.equal(204, size)
+    .then((stat) => {
+      t.equal(204, stat.size)
+      t.equal(1, stat.count)
       t.end()
     })
     .catch((err) => {

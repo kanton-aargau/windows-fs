@@ -1,11 +1,11 @@
 # windows-fs
 
+> :cyclone: Windows utilities when working with the file system. Intended for use with [electron](http://electron.atom.io/) or nodejs.
+
 [![NPM version][version-image]][version-url]
 [![Dependency Status][david-image]][david-url]
 [![License][license-image]][license-url]
 [![Js Standard Style][standard-image]][standard-url]
-
-Windows utilities when working with the file system. Intended for use with [electron](http://electron.atom.io/) or nodejs.
 
 ## Installation
 
@@ -25,6 +25,8 @@ mount('server', 'share')
 ```
 
 ## API
+
+> Note that all **paths** are written in **unix style** format to ease the developer pain from double escaping the backslash in windows. All **other path characteristics** stay the **same** (`a:/`, `//server`).
 
 ### isMounted
 
@@ -110,10 +112,11 @@ Gets the directory size (in bytes) using a recursive walk.
 
 ```javascript
 statDirectory('c:/temp/log')
-// -> 32636
+// -> { count: 4, size: 32636 }
 ```
 
-Returns **[Number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)** Directory size in bytes
+Returns **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** Object with `size` (directory size in bytes) and
+`count` (file count)
 
 ### statDrives
 
@@ -189,6 +192,8 @@ Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refe
 when the command fails
 
 ## Tests
+
+There is an extensive test suite which is not generalized for public tests because its not independent of the system it's running on. We haven't found a way to get around that for windows-like utilities.
 
 ```bash
 npm test

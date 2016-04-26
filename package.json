@@ -5,9 +5,9 @@
   "main": "index.js",
   "scripts": {
     "lint": "standard",
-    "v": "xyz",
+    "xyz": "xyz",
     "test": "tape test/*.js | tap-spec",
-    "generate-docs": "documentation readme index.js -s \"API\""
+    "docs": "documentation readme index.js -s \"API\""
   },
   "repository": {
     "type": "git",

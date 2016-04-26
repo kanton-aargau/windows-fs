@@ -16,69 +16,15 @@ npm install windows-fs
 ## Example
 
 ```js
-import { mount, getStats } from 'windows-fs'
+import { mount, statByDriveLetter } from 'windows-fs'
 
-mount('server', 'folder')
-  .then(letter => {
-    return getStats(letter)
-  })
-```
-
-## API
-
-Note that all paths are written in unix style format to ease the developer pain from double escaping the backslash in windows. All other path characteristics stay the same (`a:/`, `//server`).
-
-### drivesInfo
-
-Gets various information about all the drives mounted on a given
-`computer`
-
-**Parameters**
-
--   `computer` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Computer name
-
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** Resolves to `{ json, stdout, stderr }`
-
-### getDirSize
-
-Gets the directory size (in bytes) using a recursive walk.
-
-**Parameters**
-
--   `path` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Absolute path
-
-**Examples**
-
-```javascript
-getDirSize('c:/temp/log')
-// -> 32636
-```
-
-Returns **[Number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)** Directory size in bytes
-
-### getMountedDriveLetters
-
-Gets a list of mounted drive letters and their respective unc paths.
-
-Returns **[Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)** Array of { unc, letter } tuples
-
-### getStats
-
-Gets stats by a given drive `letter` like the current size of the hdd etc.
-This also works for drives in a network.
-
-**Parameters**
-
--   `letter` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** The drive letter which the hdd was mounted on
-
-**Examples**
-
-```javascript
-getStats('Z:')
+mount('server', 'share')
+  .then(letter => statByDriveLetter(letter))
+  .then(log)
 // -> { freeSpace: 10700152832, size: 53579083776 }
 ```
 
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise which resolves to `{ freeSpace, size }`
+## API
 
 ### isMounted
 
@@ -104,7 +50,7 @@ Returns **([String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refe
 
 ### mount
 
-Mounts a network drive to the next available drive Letter and returns a
+Mounts a network drive to the next available drive letter and returns a
 the drive letter which it was mounted on.
 
 **Parameters**
@@ -118,13 +64,74 @@ the drive letter which it was mounted on.
 ```javascript
 // (given letter Y: is free)
 mount('server', 'c$')
-  .then((letter) => console.log(letter))
+  .then(log)
   .catch((err) => console.error('failed to mount', err))
 // -> Y:
 ```
 
 Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** Resolves to the drive letter which the path was
 mounted on, rejects when the command fails
+
+### mountedDrives
+
+Gets a list of mounted drive letters and their respective unc paths.
+
+Returns **[Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)** Array of { unc, letter } tuples
+
+### statByDriveLetter
+
+Gets stats by a given drive `letter` like the current size of the hdd etc.
+This also works for drives in a network. Use `statDrives()` when their are
+no login credentials, otherwise use this function to avoid firewall
+settings.
+
+**Parameters**
+
+-   `letter` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** The drive letter which the hdd was mounted on
+
+**Examples**
+
+```javascript
+statByDriveLetter('Z:')
+// -> { freeSpace: 10700152832, size: 53579083776 }
+```
+
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** A promise which resolves to `{ freeSpace, size }`
+
+### statDirectory
+
+Gets the directory size (in bytes) using a recursive walk.
+
+**Parameters**
+
+-   `path` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Absolute path
+
+**Examples**
+
+```javascript
+statDirectory('c:/temp/log')
+// -> 32636
+```
+
+Returns **[Number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)** Directory size in bytes
+
+### statDrives
+
+Gets various information about all the drives mounted on a given
+`computer`
+
+**Parameters**
+
+-   `computer` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Computer name
+
+**Examples**
+
+```javascript
+statDrives('computer-name').then(log)
+// -> [{ deviceID: 'C:', freeSpace: 4324564, ...}, ...]
+```
+
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** Resolves to `{ json, stdout, stderr }`
 
 ### toUncPath
 
@@ -173,7 +180,7 @@ Unmounts a network drive given a `letter` and returns the `letter`.
 ```javascript
 // (given letter Z: is mounted)
 unmount('Z:')
-  .then((letter) => console.log(letter))
+  .then(log)
   .catch((err) => console.error('failed to unmount', err))
 // -> Z:
 ```

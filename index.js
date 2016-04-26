@@ -23,8 +23,13 @@ const wmicArgs = [
  *
  * @param {String} computer - Computer name
  * @return {Promise} - Resolves to `{ json, stdout, stderr }`
+ *
+ * @example
+ * statDrives('computer-name').then(log)
+ * // -> [{ deviceID: 'C:', freeSpace: 4324564, ...}, ...]
  */
-function drivesInfo (computer) {
+
+function statDrives (computer) {
   const cmd = ps.pipe(
     `get-wmiobject Win32_LogicalDisk -computerName ${computer}`,
     'where -property DriveType -eq 3'
@@ -34,7 +39,7 @@ function drivesInfo (computer) {
 }
 
 /**
- * Mounts a network drive to the next available drive Letter and returns a
+ * Mounts a network drive to the next available drive letter and returns a
  * the drive letter which it was mounted on.
  *
  * @param {String} unc - A UNC path like `//server`
@@ -46,7 +51,7 @@ function drivesInfo (computer) {
  * @example
  * // (given letter Y: is free)
  * mount('server', 'c$')
- *   .then((letter) => console.log(letter))
+ *   .then(log)
  *   .catch((err) => console.error('failed to mount', err))
  * // -> Y:
  */
@@ -83,7 +88,7 @@ function mount (unc, path, credentials) {
  * @example
  * // (given letter Z: is mounted)
  * unmount('Z:')
- *   .then((letter) => console.log(letter))
+ *   .then(log)
  *   .catch((err) => console.error('failed to unmount', err))
  * // -> Z:
  */
@@ -106,7 +111,8 @@ function unmount (letter) {
  * 
  * @return {Array} - Array of { unc, letter } tuples
  */
-function getMountedDriveLetters () {
+
+function mountedDrives () {
   return spawn('net', ['use'])
     .then((io) => {
       return pipe(
@@ -153,7 +159,7 @@ function getMountedDriveLetters () {
 
 function isMounted (unc) {
   unc = toWindowsPath(toUnc(unc))
-  return getMountedDriveLetters()
+  return mountedDevices()
     .then((drives) => {
       const i = findIndex((el) => el.unc == unc, drives)
       return i != -1
@@ -164,17 +170,19 @@ function isMounted (unc) {
 
 /**
  * Gets stats by a given drive `letter` like the current size of the hdd etc.
- * This also works for drives in a network.
+ * This also works for drives in a network. Use `statDrives()` when their are
+ * no login credentials, otherwise use this function to avoid firewall
+ * settings.
  *
  * @param {String} letter - The drive letter which the hdd was mounted on
  * @return {Promise} - A promise which resolves to `{ freeSpace, size }`
  *
  * @example
- * getStats('Z:')
+ * statByDriveLetter('Z:')
  * // -> { freeSpace: 10700152832, size: 53579083776 }
  */
 
-function getStats (letter) {
+function statByDriveLetter (letter) {
   const procs = wmicArgs.map(
     (arg) => {
       return spawn(
@@ -201,11 +209,11 @@ function getStats (letter) {
  * @returns {Number} - Directory size in bytes
  *
  * @example
- * getDirSize('c:/temp/log')
+ * statDirectory('c:/temp/log')
  * // -> 32636
  */
 
-function getDirSize (path) {
+function statDirectory (path) {
   path = toWindowsPath(path)
 
   return new Promise((resolve, reject) => {
@@ -319,12 +327,12 @@ function toUnc (server) {
   return `//${server}`
 }
 
-exports.getMountedDriveLetters = getMountedDriveLetters
+exports.statByDriveLetter = statByDriveLetter
+exports.mountedDrives = mountedDrives
 exports.toWindowsPath = toWindowsPath
-exports.getDirSize = getDirSize
-exports.drivesInfo = drivesInfo
+exports.statDirectory = statDirectory
+exports.statDrives = statDrives
 exports.toUncPath = toUncPath
 exports.isMounted = isMounted
-exports.getStats = getStats
 exports.unmount = unmount
 exports.mount = mount

@@ -24,9 +24,9 @@ mount('server', 'share')
 // -> { freeSpace: 10700152832, size: 53579083776 }
 ```
 
-## API
-
 > Note that all **paths** are written in **unix style** format to ease the developer pain from double escaping the backslash in windows. All **other path characteristics** stay the **same** (`a:/`, `//server`).
+
+## API
 
 ### isMounted
 

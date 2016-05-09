@@ -10,6 +10,7 @@ const ps = require('windows-powershell')
 const split = require('ramda/src/split')
 const spawn = require('buffered-spawn')
 const pipe = require('ramda/src/pipe')
+const { relative } = require('path')
 const walk = require('fswalk')
 
 const wmicArgs = [
@@ -213,7 +214,7 @@ function statByDriveLetter (letter) {
  *
  * @example
  * statDirectory('c:/temp/log')
- * // -> { count: 4, size: 32636 }
+ * // -> { count: 4, size: 32636, files: [{ name: '...' }, ...]}
  */
 
 function statDirectory (path) {
@@ -222,19 +223,19 @@ function statDirectory (path) {
   return new Promise((resolve, reject) => {
     let count = 0
     let size = 0
-    let files = {}
+    let files = []
 
     walk(path, onFile, onFinish)
 
-    function onFile (path, stats) {
-      files[path] = Object.assign({name: path}, stats)
+    function onFile (file, stats) {
+      files.push(Object.assign({name: relative(path, file)}, stats))
       count += 1
       size += stats.size
     }
 
     function onFinish (err) {
       if (err) return reject(err)
-      resolve({ size, count, files })
+      resolve({root: path, size, count, files})
     }
   })
 }

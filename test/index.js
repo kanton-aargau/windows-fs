@@ -1,4 +1,5 @@
 
+const { isAbsolute } = require('path')
 const join = require('path').join
 const windows = require('../')
 const test = require('tape')
@@ -6,6 +7,7 @@ const test = require('tape')
 test('stat directory size', (t) => {
   windows.statDirectory(join(__dirname, 'fixtures'))
     .then((stat) => {
+      t.true(isAbsolute(stat.root), 'has absolute directory path')
       t.equal(stat.size, 278)
       t.equal(stat.count, 2)
       t.end()
@@ -19,10 +21,13 @@ test('stat directory files', (t) => {
   windows.statDirectory(join(__dirname, 'fixtures'))
     .then((stat) => {
       t.true(stat.files, 'gets files')
-      const files = objectToArray(stat.files)
-      t.equal(files.length, 2, 'counts all files')
-      t.true(files[0].name, 'file has a name')
-      t.true(files[0].birthtime, 'file has a birthtime')
+      t.equal(stat.files.length, 2, 'counts all files')
+      t.equal(
+        stat.files[0].name,
+        'index.js',
+        'file has a name and is relative to root'
+      )
+      t.true(stat.files[0].birthtime, 'file has a birthtime')
       t.end()
     })
     .catch((err) => {

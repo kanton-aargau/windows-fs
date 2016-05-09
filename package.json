@@ -9,6 +9,9 @@
     "test": "tape test/*.js | tap-spec",
     "docs": "documentation readme index.js -s \"API\""
   },
+  "engines": {
+    "node": "6.0.0"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/kanton-aargau/windows-fs"

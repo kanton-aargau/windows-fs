@@ -203,11 +203,13 @@ function statByDriveLetter (letter) {
 }
 
 /**
- * Gets the directory size (in bytes) using a recursive walk.
+ * Gets various metadata about the directory and the files in it using
+ * a recursive walk.
  *
  * @param {String} path - Absolute path
- * @returns {Object} - Object with `size` (directory size in bytes) and
- * `count` (file count)
+ * @returns {Object} - Object with `size` (directory size in bytes),
+ * `count` (file count) and `files` (list of files in the directory and their
+ * respective metadata)
  *
  * @example
  * statDirectory('c:/temp/log')

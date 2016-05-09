@@ -102,7 +102,8 @@ Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refe
 
 ### statDirectory
 
-Gets the directory size (in bytes) using a recursive walk.
+Gets various metadata about the directory and the files in it using
+a recursive walk.
 
 **Parameters**
 
@@ -115,8 +116,9 @@ statDirectory('c:/temp/log')
 // -> { count: 4, size: 32636 }
 ```
 
-Returns **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** Object with `size` (directory size in bytes) and
-`count` (file count)
+Returns **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** Object with `size` (directory size in bytes),
+`count` (file count) and `files` (list of files in the directory and their
+respective metadata)
 
 ### statDrives
 

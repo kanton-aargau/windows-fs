@@ -6,14 +6,33 @@ const test = require('tape')
 test('stat directory size', (t) => {
   windows.statDirectory(join(__dirname, 'fixtures'))
     .then((stat) => {
-      t.equal(204, stat.size)
-      t.equal(1, stat.count)
+      t.equal(stat.size, 278)
+      t.equal(stat.count, 2)
       t.end()
     })
     .catch((err) => {
       console.error(err)
     })
 })
+
+test('stat directory files', (t) => {
+  windows.statDirectory(join(__dirname, 'fixtures'))
+    .then((stat) => {
+      t.true(stat.files, 'gets files')
+      const files = objectToArray(stat.files)
+      t.equal(files.length, 2, 'counts all files')
+      t.true(files[0].name, 'file has a name')
+      t.true(files[0].birthtime, 'file has a birthtime')
+      t.end()
+    })
+    .catch((err) => {
+      console.error(err)
+    })
+})
+
+function objectToArray (obj) {
+  return Object.keys(obj).map((key) => obj[key])
+}
 
 test('convert to a windows path', (t) => {
   t.equal('some\\log\\folder', windows.toWindowsPath('some/log/folder'))

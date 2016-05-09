@@ -220,17 +220,19 @@ function statDirectory (path) {
   return new Promise((resolve, reject) => {
     let count = 0
     let size = 0
+    let files = {}
 
     walk(path, onFile, onFinish)
 
     function onFile (path, stats) {
+      files[path] = Object.assign({name: path}, stats)
       count += 1
       size += stats.size
     }
 
     function onFinish (err) {
       if (err) return reject(err)
-      resolve({ size, count })
+      resolve({ size, count, files })
     }
   })
 }

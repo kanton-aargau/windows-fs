@@ -1,4 +1,6 @@
 
+const math = require('./math')
+
 console.log(
   'some',
   'code',
@@ -6,13 +8,5 @@ console.log(
 )
 
 function op (a, b) {
-  return mul(add(a, b), add(a, b))
-}
-
-function mul (a, b) {
-  return a * b
-}
-
-function add (a, b) {
-  return a + b
+  return math.mul(math.add(a, b), math.add(a, b))
 }

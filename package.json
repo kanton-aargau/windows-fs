@@ -1,6 +1,6 @@
 {
   "name": "windows-fs",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Windows utilities when working with the file system",
   "main": "index.js",
   "scripts": {
